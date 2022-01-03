@@ -36,7 +36,6 @@ struct PlayerScoreUpdate {
 	int mount;
 	int pool;
 	int whists;
-	bool operator==(const PlayerScoreUpdate&) const = default;
 };
 
 using ScoreUpdate = std::array<PlayerScoreUpdate, 3>;

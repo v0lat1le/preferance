@@ -3,6 +3,10 @@
 #include <libpreferance/preferance.hpp>
 
 
+bool operator==(const PlayerScoreUpdate& lhs, const PlayerScoreUpdate& rhs) {
+	return lhs.mount == rhs.mount && lhs.pool == rhs.pool && lhs.whists == rhs.whists;
+};
+
 void checkScore(const RoundResult& roundResult, const ScoreUpdate& expected) {
 	auto actual = updateScore(roundResult);
 	REQUIRE(actual == expected);
