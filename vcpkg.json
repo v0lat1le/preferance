@@ -1,0 +1,12 @@
+{
+  "name": "preferance",
+  "version-string": "0.1.0",
+  "dependencies": [
+  ],
+  "features": {
+    "tests": {
+      "description": "Build Tests",
+      "dependencies": [ "catch2" ]
+    }
+  }
+}
