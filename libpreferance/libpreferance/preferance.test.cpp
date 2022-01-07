@@ -274,3 +274,31 @@ TEST_CASE("Round Score", "[score]") {
 	REQUIRE(roundScore({ {{ 4, 0, 0 }, { 0, 0, 16 }, { 0, 0, 8 }} }, 3) == RoundScore{ {-80-32-16, 40+32, 40+16} });
 	REQUIRE(roundScore({ {{ 0, 2, 0 }, { 0, 0, 6 }, { 0, 0, 2 }} }, 4) == RoundScore{ {60-18-6, 18-20, 6-20} });
 }
+
+// Card stuff
+TEST_CASE("Card Suit", "[cards]") {
+	for (Card card = 0; card < 8; ++card) {
+		REQUIRE(cardSuit(card) == CardSet(255));
+	}
+	for (Card card = 8; card < 16; ++card) {
+		REQUIRE(cardSuit(card) == CardSet(255 << 8));
+	}
+	for (Card card = 16; card < 24; ++card) {
+		REQUIRE(cardSuit(card) == CardSet(255 << 16));
+	}
+	for (Card card = 24; card < 32; ++card) {
+		REQUIRE(cardSuit(card) == CardSet(255 << 24));
+	}
+}
+
+TEST_CASE("Find First", "[cards]") {
+	REQUIRE(firstCard(CardSet(3)) == 0);
+	REQUIRE(firstCard(CardSet(5)) == 0);
+	REQUIRE(firstCard(CardSet(6)) == 1);
+	REQUIRE(firstCard(CardSet(10)) == 1);
+	REQUIRE(firstCard(CardSet(12)) == 2);
+	REQUIRE(firstCard(CardSet(20)) == 2);
+	REQUIRE(firstCard(CardSet(127)) == 0);
+	REQUIRE(firstCard(CardSet(128)) == 7);
+	REQUIRE(firstCard(CardSet(21 << 20)) == 20);
+}

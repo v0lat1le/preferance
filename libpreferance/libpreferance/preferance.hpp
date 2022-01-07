@@ -1,7 +1,8 @@
 #pragma once
 
 #include <array>
-
+#include <bitset>
+#include <numeric>
 
 enum class PlayerBid {
 	MISERE = 0,
@@ -122,4 +123,18 @@ RoundScore roundScore(const ScoreUpdate& update, int nPlayers) {
 		((update[1].pool - update[1].mount) * 10 + update[1].whists) * (nPlayers - 1) + (update[0].mount - update[0].pool + update[2].mount - update[2].pool) * 10,
 		((update[2].pool - update[2].mount) * 10 + update[2].whists) * (nPlayers - 1) + (update[0].mount - update[0].pool + update[1].mount - update[1].pool) * 10,
 	};
+}
+
+using Card = size_t;
+
+using Round = std::array<Card, 3>;
+
+using CardSet = std::bitset<32>;
+
+CardSet cardSuit(const Card& card) {
+	return CardSet(255) << (card & 24);
+}
+
+Card firstCard(const CardSet& cards) {
+	return std::countr_zero(cards.to_ulong());
 }
