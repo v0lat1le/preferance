@@ -133,6 +133,41 @@ using Round = std::array<Card, 3>;
 
 using CardSet = std::bitset<32>;
 
+CardSet operator "" _spades(const char* s, size_t l) {
+	CardSet result{};
+	for (std::size_t i = 0; i < l; ++i) {
+		switch (s[i]) {
+		case 'A':
+			result.set(7);
+			break;
+		case 'K':
+			result.set(6);
+			break;
+		case 'Q':
+			result.set(5);
+			break;
+		case 'J':
+			result.set(4);
+			break;
+		case '0':
+			result.set(3);
+			break;
+		default:
+			result.set(s[i] - '7');
+		}
+	}
+	return result;
+}
+CardSet operator "" _clubs(const char* s, size_t l) {
+	return operator "" _spades(s, l) << 8;
+}
+CardSet operator "" _diamonds(const char* s, size_t l) {
+	return operator "" _spades(s, l) << 16;
+}
+CardSet operator "" _hearts(const char* s, size_t l) {
+	return operator "" _spades(s, l) << 24;
+}
+
 CardSet cardSuit(const Card& card) {
 	return CardSet(255) << (card & 24);
 }

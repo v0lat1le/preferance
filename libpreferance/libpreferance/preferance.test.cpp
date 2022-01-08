@@ -291,6 +291,12 @@ TEST_CASE("Card Suit", "[cards]") {
 	}
 }
 
+TEST_CASE("CardSet Literals", "[cards]") {
+	REQUIRE("A7"_spades == CardSet(129));
+	REQUIRE(("A"_clubs | "8"_spades) == CardSet((128 << 8) | 2));
+	REQUIRE(("A"_diamonds | "A"_hearts) == CardSet((128 << 16) | (128 << 24)));
+}
+
 TEST_CASE("First Card", "[cards]") {
 	REQUIRE(firstCard(CardSet(3)) == 0);
 	REQUIRE(firstCard(CardSet(5)) == 0);
