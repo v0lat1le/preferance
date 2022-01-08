@@ -291,7 +291,7 @@ TEST_CASE("Card Suit", "[cards]") {
 	}
 }
 
-TEST_CASE("Find First", "[cards]") {
+TEST_CASE("First Card", "[cards]") {
 	REQUIRE(firstCard(CardSet(3)) == 0);
 	REQUIRE(firstCard(CardSet(5)) == 0);
 	REQUIRE(firstCard(CardSet(6)) == 1);
@@ -301,4 +301,47 @@ TEST_CASE("Find First", "[cards]") {
 	REQUIRE(firstCard(CardSet(127)) == 0);
 	REQUIRE(firstCard(CardSet(128)) == 7);
 	REQUIRE(firstCard(CardSet(21 << 20)) == 20);
+}
+
+TEST_CASE("Next Card", "[cards]") {
+	REQUIRE(nextCard(0, CardSet(3)) == 1);
+	REQUIRE(nextCard(0, CardSet(5)) == 2);
+	REQUIRE(nextCard(1, CardSet(6)) == 2);
+	REQUIRE(nextCard(2, CardSet(6)) >= 32);
+}
+
+TEST_CASE("Compare Cards", "[cards]") {
+	REQUIRE(cmpCards(5, 5, CardSet(255 << 16)) == 0);
+	REQUIRE(cmpCards(4, 5, CardSet(255 << 16)) < 0);
+	REQUIRE(cmpCards(5, 4, CardSet(255 << 16)) > 0);
+	REQUIRE(cmpCards(5, 14, CardSet(255 << 16)) > 0);
+	REQUIRE(cmpCards(5, 16, CardSet(255 << 16)) < 0);
+}
+
+TEST_CASE("Legal Plays", "[play]") {
+}
+
+TEST_CASE("Find Winner", "[play]") {
+	REQUIRE(findWinner({ 3, 4, 5 }, CardSet(255 << 16), 1) == 2);
+	REQUIRE(findWinner({ 3, 4, 13 }, CardSet(255 << 16), 1) == 1);
+	REQUIRE(findWinner({ 19, 4, 13 }, CardSet(255 << 16), 1) == 0);
+}
+
+
+TEST_CASE("Find Play", "[play]") {
+	std::array<CardSet, 3> hands = { CardSet(129), CardSet((128<<8)|2), CardSet((128<<16)|(128<<24)) };
+	RoundResult bids = { PlayerBid::TEN, {DefenderBid::PASS, DefenderBid::WHIST}, {0, 0, 0} };
+	auto scoreFunc = [&bids](RoundResult result) { return roundScore(updateScore(result), 3); };
+	std::array<Round, 10> rounds = {};
+	std::array<int, 3> tricks = { 8, 0, 0 };
+	RoundScore score = findPlayFirst(
+		hands,
+		bids,
+		CardSet(255),
+		0,
+		scoreFunc,
+		rounds,
+		tricks,
+		8);
+	REQUIRE(score == RoundScore{300, 0, -300});
 }
