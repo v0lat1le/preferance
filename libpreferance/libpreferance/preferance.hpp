@@ -180,6 +180,15 @@ Card nextCard(const Card& card, const CardSet& cards) {
 	return firstCard(cards >> (card + 1)) + card + 1;
 }
 
+Card nextDistinctCard(Card card, const CardSet& cards) {
+	Card next = nextCard(card, cards);
+	while (next == card + 1 && (card & 24) == (next & 24) && next < cards.size()) {
+		card = next;
+		next = nextCard(card, cards);
+	}
+	return next;
+}
+
 CardSet legalPlays(const CardSet& suit, const CardSet& trumps, const CardSet& hand) {
 	CardSet result = hand & suit;
 	if (result.any()) {
@@ -225,7 +234,7 @@ RoundScore findPlayFirst(std::array<CardSet, 3> hands, const RoundResult& bids, 
 	CardSet legal = hands[player];
 	Card bestCard = 0;
 	RoundScore bestScore = { -10000, -10000, -10000 };
-	for (Card card = firstCard(legal); card < 32; card = nextCard(card, legal)) {
+	for (Card card = firstCard(legal); card < legal.size(); card = nextDistinctCard(card, legal)) {
 		play[round][player] = card;
 		hands[player].reset(card);
 		auto score = findPlaySecond(hands, bids, trumps, (player + 1) % 3, scoreFunc, play, tricks, round, card);
@@ -243,7 +252,7 @@ RoundScore findPlaySecond(std::array<CardSet, 3> hands, const RoundResult& bids,
 	CardSet legal = legalPlays(cardSuit(initCard), trumps, hands[player]);
 	Card bestCard = 0;
 	RoundScore bestScore = { -10000, -10000, -10000 };
-	for (Card card = firstCard(legal); card < 32; card = nextCard(card, legal)) {
+	for (Card card = firstCard(legal); card < legal.size(); card = nextDistinctCard(card, legal)) {
 		play[round][player] = card;
 		hands[player].reset(card);
 		auto score = findPlayThird(hands, bids, trumps, (player + 1) % 3, scoreFunc, play, tricks, round, initCard);
@@ -261,7 +270,7 @@ RoundScore findPlayThird(std::array<CardSet, 3> hands, const RoundResult& bids, 
 	CardSet legal = legalPlays(cardSuit(initCard), trumps, hands[player]);
 	Card bestCard = 0;
 	RoundScore bestScore = { -10000, -10000, -10000 };
-	for (Card card = firstCard(legal); card < 32; card = nextCard(card, legal)) {
+	for (Card card = firstCard(legal); card < legal.size(); card = nextDistinctCard(card, legal)) {
 		play[round][player] = card;
 		int nextPlayer = findWinner(play[round], trumps, (player + 1) % 3);
 		tricks[nextPlayer] += 1;

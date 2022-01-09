@@ -333,21 +333,40 @@ TEST_CASE("Find Winner", "[play]") {
 	REQUIRE(findWinner({ 19, 4, 13 }, CardSet(255 << 16), 1) == 0);
 }
 
-
 TEST_CASE("Find Play", "[play]") {
-	std::array<CardSet, 3> hands = { CardSet(129), CardSet((128<<8)|2), CardSet((128<<16)|(128<<24)) };
-	RoundResult bids = { PlayerBid::TEN, {DefenderBid::PASS, DefenderBid::WHIST}, {0, 0, 0} };
-	auto scoreFunc = [&bids](RoundResult result) { return roundScore(updateScore(result), 3); };
-	std::array<Round, 10> rounds = {};
-	std::array<int, 3> tricks = { 8, 0, 0 };
-	RoundScore score = findPlayFirst(
-		hands,
-		bids,
-		CardSet(255),
-		0,
-		scoreFunc,
-		rounds,
-		tricks,
-		8);
-	REQUIRE(score == RoundScore{300, 0, -300});
+	SECTION("Simple") {
+		std::array<CardSet, 3> hands = {
+			"A7"_spades,
+			"A"_clubs | "8"_spades,
+			"A"_diamonds | "A"_hearts };
+		RoundResult bids = { PlayerBid::TEN, {DefenderBid::PASS, DefenderBid::WHIST}, {0, 0, 0} };
+		auto scoreFunc = [&bids](RoundResult result) { return roundScore(updateScore(result), 3); };
+		std::array<Round, 10> rounds = {};
+		std::array<int, 3> tricks = { 8, 0, 0 };
+		RoundScore score = findPlayFirst(
+			hands,
+			bids,
+			CardSet(255),
+			0,
+			scoreFunc,
+			rounds,
+			tricks,
+			8);
+		REQUIRE(score == RoundScore{ 300, 0, -300 });
+	}
+//	SECTION("Full") {
+//		std::array<CardSet, 3> hands = {
+//			"AKJ0"_spades | "AK"_clubs | "J0"_diamonds | "K0"_hearts,
+//			"Q9"_spades | "QJ09"_clubs | "A987"_diamonds,
+//			"87"_spades | "87"_clubs | "QK"_diamonds | "A987"_hearts,
+//		};
+//		RoundResult bids = { PlayerBid::SIX, {DefenderBid::WHIST, DefenderBid::WHIST}, {0, 0, 0} };
+//		auto scoreFunc = [&bids](RoundResult result) { return roundScore(updateScore(result), 3); };
+//		auto play = findPlay(
+//			hands,
+//			bids,
+//			CardSet(255),
+//			0,
+//			scoreFunc);
+//	}
 }
